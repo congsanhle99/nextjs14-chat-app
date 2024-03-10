@@ -1,5 +1,6 @@
-import { Button, Flex } from "antd";
+import { connectMongoDB } from "@/config/db-config";
 import { UserButton, currentUser } from "@clerk/nextjs";
+connectMongoDB();
 
 export default async function Home() {
   const logInUserData = await currentUser();
