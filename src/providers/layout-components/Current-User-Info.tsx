@@ -1,6 +1,6 @@
 import { UserType } from "@/interfaces";
 import { useClerk } from "@clerk/nextjs";
-import { Button, Divider, Drawer, message } from "antd";
+import { Button, Divider, Drawer, Upload, message } from "antd";
 import dayjs from "dayjs";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -21,6 +21,7 @@ const CurrentUserInfo = ({
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const { signOut } = useClerk();
   const router = useRouter();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const getProperty = (key: string, value: string) => {
     return (
@@ -45,19 +46,33 @@ const CurrentUserInfo = ({
     }
   };
 
+  const onProfilePictureUpdate = () => {};
+
   return (
     <Drawer open={showCurrentUserInfo} onClose={() => setShowCurrentUserInfo(false)} title="Profile">
       {currentUserData && (
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-5 justify-center items-center">
-            <Image
-              src={currentUserData?.profilePicture}
-              width={160}
-              height={160}
-              alt="avatar user"
-              className="rounded-full"
-            />
-            <span>Change Profile Picture</span>
+            {!selectedFile && (
+              <Image
+                src={currentUserData?.profilePicture}
+                width={160}
+                height={160}
+                alt="avatar user"
+                className="rounded-full"
+              />
+            )}
+            <Upload
+              className="cursor-pointer"
+              beforeUpload={(file) => {
+                setSelectedFile(file);
+                return false;
+              }}
+              listType={selectedFile ? "picture-circle" : "text"}
+              maxCount={1}
+            >
+              Change Profile Picture
+            </Upload>
           </div>
           <Divider className="my-1 border-gray-200" />
           <div className="flex flex-col gap-5">
@@ -66,7 +81,16 @@ const CurrentUserInfo = ({
             {getProperty("ID", currentUserData._id)}
             {getProperty("Join On", dayjs(currentUserData.createAt).format("DD/MMM/YYYY HH:mm"))}
           </div>
-          <div className="mt-5">
+          <div className="mt-5 flex flex-col gap-4">
+            <Button
+              className="w-full"
+              block
+              loading={loading}
+              onClick={onProfilePictureUpdate}
+              disabled={!selectedFile}
+            >
+              Upload Picture
+            </Button>
             <Button className="w-full" block loading={loading} onClick={onLogout}>
               Logout
             </Button>
