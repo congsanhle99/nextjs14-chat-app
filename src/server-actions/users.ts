@@ -36,3 +36,14 @@ export const GetCurrentUserFromMongoDB = async () => {
     };
   }
 };
+
+export const UpdateUserProfile = async (userId: string, payload: any) => {
+  try {
+    const updateUser = await UserModel.findByIdAndUpdate(userId, payload, { new: true });
+    return JSON.parse(JSON.stringify(updateUser));
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};

@@ -5,8 +5,10 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
-import { UserState } from "@/redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { SetCurrentUser, UserState } from "@/redux/userSlice";
+import { uploadImageToFirebaseAndReturnUrl } from "@/helpers/image-upload";
+import { UpdateUserProfile } from "@/server-actions/users";
 
 const CurrentUserInfo = ({
   // currentUser,
@@ -22,6 +24,7 @@ const CurrentUserInfo = ({
   const { signOut } = useClerk();
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const dispatch = useDispatch();
 
   const getProperty = (key: string, value: string) => {
     return (
@@ -40,13 +43,30 @@ const CurrentUserInfo = ({
       message.success("Logged out successfully!");
       router.push("/sign-in");
     } catch (error: any) {
-      message.error(error.message);
+      message.error(error?.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const onProfilePictureUpdate = () => {};
+  const onProfilePictureUpdate = async () => {
+    try {
+      setLoading(true);
+      const url: string = await uploadImageToFirebaseAndReturnUrl(selectedFile!);
+      const res = await UpdateUserProfile(currentUserData?._id!, { profilePicture: url });
+      if (res.error) {
+        throw new Error(res.error);
+      }
+      dispatch(SetCurrentUser(res));
+      message.success("Profile Picture Updated!");
+      setShowCurrentUserInfo(false);
+    } catch (error: any) {
+      message.error(error.message);
+    } finally {
+      setLoading(false);
+      setSelectedFile(null);
+    }
+  };
 
   return (
     <Drawer open={showCurrentUserInfo} onClose={() => setShowCurrentUserInfo(false)} title="Profile">
@@ -91,7 +111,7 @@ const CurrentUserInfo = ({
             >
               Upload Picture
             </Button>
-            <Button className="w-full" block loading={loading} onClick={onLogout}>
+            <Button className="w-full" block loading={loading && !selectedFile} onClick={onLogout}>
               Logout
             </Button>
           </div>
