@@ -5,17 +5,20 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { UserState } from "@/redux/userSlice";
 
 const CurrentUserInfo = ({
-  currentUser,
+  // currentUser,
   showCurrentUserInfo,
   setShowCurrentUserInfo,
 }: {
-  currentUser: UserType | null;
+  // currentUser: UserType | null;
   showCurrentUserInfo: boolean;
   setShowCurrentUserInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const { currentUserData }: UserState = useSelector((state: any) => state.user);
   const { signOut } = useClerk();
   const router = useRouter();
 
@@ -44,11 +47,11 @@ const CurrentUserInfo = ({
 
   return (
     <Drawer open={showCurrentUserInfo} onClose={() => setShowCurrentUserInfo(false)} title="Profile">
-      {currentUser && (
+      {currentUserData && (
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-5 justify-center items-center">
             <Image
-              src={currentUser?.profilePicture}
+              src={currentUserData?.profilePicture}
               width={160}
               height={160}
               alt="avatar user"
@@ -58,10 +61,10 @@ const CurrentUserInfo = ({
           </div>
           <Divider className="my-1 border-gray-200" />
           <div className="flex flex-col gap-5">
-            {getProperty("Name", currentUser.name)}
-            {getProperty("Username", currentUser.userName)}
-            {getProperty("ID", currentUser._id)}
-            {getProperty("Join On", dayjs(currentUser.createAt).format("DD/MMM/YYYY HH:mm"))}
+            {getProperty("Name", currentUserData.name)}
+            {getProperty("Username", currentUserData.userName)}
+            {getProperty("ID", currentUserData._id)}
+            {getProperty("Join On", dayjs(currentUserData.createAt).format("DD/MMM/YYYY HH:mm"))}
           </div>
           <div className="mt-5">
             <Button className="w-full" block loading={loading} onClick={onLogout}>

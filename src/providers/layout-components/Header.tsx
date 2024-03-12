@@ -6,6 +6,8 @@ import { Avatar, message } from "antd";
 import { useEffect, useState } from "react";
 import CurrentUserInfo from "./Current-User-Info";
 import { usePathname } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { SetCurrentUser, UserState } from "@/redux/userSlice";
 
 const Header = () => {
   const pathName = usePathname();
@@ -14,7 +16,9 @@ const Header = () => {
     return null;
   }
 
-  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+  // const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+  const { currentUserData }: UserState = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const [showCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
 
   const getCurrentUser = async () => {
@@ -23,7 +27,8 @@ const Header = () => {
       if (res.error) {
         throw new Error(res.error);
       }
-      setCurrentUser(res);
+      // setCurrentUser(res);
+      dispatch(SetCurrentUser(res as UserType));
     } catch (error: any) {
       message.error(error.message);
     }
@@ -63,20 +68,16 @@ const Header = () => {
           <h1 className="text-2xl font-bold text-primary uppercase">Quick Chat</h1>
         </div>
         <div className="gap-5 flex items-center">
-          <span className="text-sm">{currentUser?.name}</span>
+          <span className="text-sm">{currentUserData?.name}</span>
           <Avatar
-            src={currentUser?.profilePicture}
+            src={currentUserData?.profilePicture}
             className="cursor-pointer"
             onClick={() => setShowCurrentUserInfo(true)}
           />
         </div>
 
         {showCurrentUserInfo && (
-          <CurrentUserInfo
-            currentUser={currentUser}
-            showCurrentUserInfo={showCurrentUserInfo}
-            setShowCurrentUserInfo={setShowCurrentUserInfo}
-          />
+          <CurrentUserInfo showCurrentUserInfo={showCurrentUserInfo} setShowCurrentUserInfo={setShowCurrentUserInfo} />
         )}
       </div>
     </>
