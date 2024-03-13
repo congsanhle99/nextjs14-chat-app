@@ -1,10 +1,15 @@
-import { connectMongoDB } from "@/config/db-config";
-connectMongoDB();
+"use client";
 
-export default async function Home() {
+import { Divider } from "antd";
+import ChatArea from "./_chat-components/chat-area";
+import Chats from "./_chat-components/chats";
+
+export default function Home() {
   return (
-    <div className="p-10">
-      <h1>Home Page</h1>
+    <div className="flex h-[85vh]">
+      <Chats />
+      <Divider type="vertical" className="h-full bg-gray-300" />
+      <ChatArea />
     </div>
   );
 }
