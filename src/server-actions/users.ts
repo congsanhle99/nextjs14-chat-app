@@ -47,3 +47,14 @@ export const UpdateUserProfile = async (userId: string, payload: any) => {
     };
   }
 };
+
+export const GetAllUsers = async () => {
+  try {
+    const users = await UserModel.find({});
+    return JSON.parse(JSON.stringify(users));
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
