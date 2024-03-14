@@ -12,3 +12,18 @@ export const CreateNewChat = async (payload: any) => {
     };
   }
 };
+
+export const GetAllChats = async (userId: string) => {
+  try {
+    const users = await ChatModel.find({
+      users: {
+        $in: [userId],
+      },
+    }).populate("users");
+    return JSON.parse(JSON.stringify(users));
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};

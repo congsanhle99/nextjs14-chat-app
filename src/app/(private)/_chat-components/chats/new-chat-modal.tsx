@@ -1,4 +1,5 @@
 import { UserType } from "@/interfaces";
+import { ChatState } from "@/redux/chatSlice";
 import { UserState } from "@/redux/userSlice";
 import { CreateNewChat } from "@/server-actions/chats";
 import { GetAllUsers } from "@/server-actions/users";
@@ -17,6 +18,7 @@ const NewChatModal = ({
   const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { currentUserData }: UserState = useSelector((state: any) => state.user);
+  const { chats }: ChatState = useSelector((state: any) => state.chat);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const getUsers = async () => {
@@ -74,9 +76,12 @@ const NewChatModal = ({
         {!loading && users.length > 0 && (
           <div className="flex flex-col gap-5">
             {users.map((user) => {
-              if (user._id === currentUserData?._id) {
+              const chatAlreadyCreated = chats.find((chat) => chat.users.find((u) => u._id === user._id));
+
+              if (user._id === currentUserData?._id || chatAlreadyCreated) {
                 return null;
               }
+
               return (
                 <>
                   <div key={user._id} className="flex justify-between items-center h1">
