@@ -28,7 +28,7 @@ const ChatsHeader = () => {
       <input
         type="text"
         placeholder="Search chats..."
-        className="w-full bg-gray-50 border border-gray-300 border-solid outline-none rounded-md px-2 py-1 h-8 mt-4 focus:outline-none focus:border-primary"
+        className="w-full bg-blue-50 border border-gray-300 border-solid outline-none rounded-md px-2 py-1 h-8 mt-4 focus:outline-none focus:border-primary"
       />
       {showChatModal && <NewChatModal showChatModal={showChatModal} setShowChatModal={setShowChatModal} />}
     </div>
